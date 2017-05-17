@@ -1,20 +1,17 @@
-module GameOfLife.Rules (
-                          Cell(..)
-                        , transitionCell) where
+module GameOfLife.Rules (transitionCell) where
 
-data Cell = LivingCell | DeadCell
-  deriving Show
+import GameOfLife.Cell
 
 type Neighbours = [Cell]
 
 living :: Neighbours -> Neighbours
-living neighbours = [ x | x@(LivingCell) <- neighbours ]
+living neighbours = [ x | x@(LivingCell _) <- neighbours ]
 
-transitionCell :: Cell -> Neighbours -> Cell
-transitionCell LivingCell neighbours
-    | length (living neighbours) > 3   = DeadCell
-    | length (living neighbours) >= 2  = LivingCell
-    | otherwise                        = DeadCell
-transitionCell DeadCell neighbours
-    | length (living neighbours) == 3  = LivingCell
-    | otherwise                        = DeadCell
+transitionCell :: Neighbours -> Cell -> Cell
+transitionCell neighbours (LivingCell pos)
+    | length (living neighbours) > 3   = DeadCell pos
+    | length (living neighbours) >= 2  = LivingCell pos
+    | otherwise                        = DeadCell pos
+transitionCell neighbours (DeadCell pos)
+    | length (living neighbours) == 3  = LivingCell pos
+    | otherwise                        = DeadCell pos
