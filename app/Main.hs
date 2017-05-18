@@ -1,6 +1,8 @@
 module Main where
 
 import System.Random (randomRIO)
+import Data.List (sort)
+import Control.Concurrent (threadDelay)
 import GameOfLife.Cell (Cell(..))
 import GameOfLife.GameBoard (GameBoard(..))
 import GameOfLife.Position (Position(..))
@@ -8,12 +10,23 @@ import GameOfLife.Visualizer (visualize)
 import GameOfLife.Evolution (evolve)
 
 main :: IO ()
-main = display =<< GameBoard <$> seedCells
+main = do
+  board <- GameBoard <$> seedCells
+  display 1 board
 
-display :: GameBoard -> IO ()
-display board = do
+type Round = Int
+display :: Round -> GameBoard -> IO ()
+display round board = do
+  clearScreen
+  putStrLn $ "Round: " ++ show round
   putStrLn $ visualize board
-  display $ evolve board
+  let evolvedBoard = evolve board
+  putStrLn $ "Boards converged? " ++ show (board == evolvedBoard)
+  threadDelay 250000
+  display (round +1)$ evolve board
+
+clearScreen :: IO ()
+clearScreen = putStr "\ESC[2J"
 
 seedCells :: IO [Cell]
 seedCells = sequence $ map createCell seedPositions
@@ -22,7 +35,7 @@ createCell :: Position -> IO Cell
 createCell position = randomCell <**> position
 
 seedPositions :: [Position]
-seedPositions = [Position x y | x <- [0..10], y <- [0..10]]
+seedPositions = sort [Position x y | x <- [0..40], y <- [0..40]]
 
 randomCell :: IO (Position -> Cell)
 randomCell = toCell <$> zeroOrOne
