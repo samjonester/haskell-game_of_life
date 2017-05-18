@@ -1,9 +1,9 @@
 module Main where
 
 import System.Random (randomRIO)
-import GameOfLife.Cell
-import GameOfLife.GameBoard
-import GameOfLife.Position
+import GameOfLife.Cell (Cell(..))
+import GameOfLife.GameBoard (GameBoard(..))
+import GameOfLife.Position (Position(..))
 import GameOfLife.Visualizer (visualize)
 import GameOfLife.Evolution (evolve)
 
@@ -12,7 +12,7 @@ main = display =<< GameBoard <$> seedCells
 
 display :: GameBoard -> IO ()
 display board = do
-  visualize board
+  putStrLn $ visualize board
   display $ evolve board
 
 seedCells :: IO [Cell]
